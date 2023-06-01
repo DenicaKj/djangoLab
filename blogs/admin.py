@@ -53,10 +53,10 @@ class CommentAdmin(admin.ModelAdmin):
 admin.site.register(Comment, CommentAdmin)
 
 
-class BlogFileInline(admin.TabularInline):
+class BlogFileInline(admin.StackedInline):
     model = BlogFile
     extra = 1
-    readonly_fields = ('file',)
+
     def has_add_permission(self, request, obj=None):
         return True
 
@@ -66,6 +66,7 @@ class BlogAdmin(admin.ModelAdmin):
     list_filter = (("date",DateFieldListFilter),)
     search_fields = ("title", "content",)
     exclude = ("user",)
+
 
     def has_delete_permission(self, request, obj=None):
         if obj and (request.user == obj.user or request.user.is_superuser):
