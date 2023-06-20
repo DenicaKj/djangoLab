@@ -8,12 +8,12 @@ def posts(request):
     filtered=[]
     cu=CustomUser.objects.filter(id=request.user.id).first()
     for blog in queryset:
-        if blog.user not in cu.blocked_users.all():
+        blockedUsers=cu.blocked_users.all()
+        if blog.user in blockedUsers:
+            continue
+        else:
             filtered.append(blog)
-        elif request.user not in blog.user.blocked_users.all():
-            filtered.append(blog)
-        elif request.user!=blog.user:
-            filtered.append(blog)
+
     context = {"blogs":filtered}
     return render(request, "posts.html", context=context)
 
@@ -49,7 +49,7 @@ def blocked(request):
     if request.method == "POST" and request.POST.get('action')!='delete':
         id=request.POST.get('userid')
         user.blocked_users.add(CustomUser.objects.filter(id=int(id)).first())
-        return redirect("profile")
+        return redirect("blocked")
     elif request.method == "POST":
         id = request.POST.get('userid')
         user.blocked_users.remove(CustomUser.objects.filter(id=int(id)).first())
