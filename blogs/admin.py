@@ -52,16 +52,33 @@ class CommentAdmin(admin.ModelAdmin):
 
 admin.site.register(Comment, CommentAdmin)
 
+class CommentInline(admin.StackedInline):
+    model=Comment
+    extra = 0
+    can_delete = True
+    def has_delete_permission(self, request, obj=None):
+        return True
+    def has_add_permission(self, request, obj=None):
+        return True
+    def has_view_permission(self, request, obj=None):
+        return True
+    def has_change_permission(self, request, obj=None):
+        return True
 
 class BlogFileInline(admin.StackedInline):
     model = BlogFile
-    extra = 1
+    extra = 0
+    can_delete = True
+    def has_delete_permission(self, request, obj=None):
+        return True
 
     def has_add_permission(self, request, obj=None):
         return True
+    def has_view_permission(self, request, obj=None):
+        return True
 
 class BlogAdmin(admin.ModelAdmin):
-    inlines = [BlogFileInline,]
+    inlines = [BlogFileInline,CommentInline]
     list_display = ("title", "user",)
     list_filter = (("date",DateFieldListFilter),)
     search_fields = ("title", "content",)
@@ -119,10 +136,17 @@ class CustomUserAdmin(UserAdmin):
     def has_add_permission(self, request):
         return True
 
+    obj = None
+
+    def get_form(self, request, obj=None, **kwargs):
+        if obj:
+            self.obj = obj
+        return super(CustomUserAdmin, self).get_form(request, obj, **kwargs)
+
     def formfield_for_manytomany(self, db_field, request, **kwargs):
         if db_field.name == 'blocked_users':
             # Filter the queryset for the foreign key field
-            kwargs['queryset'] = CustomUser.objects.exclude(id=request.user.id)
+            kwargs['queryset'] = CustomUser.objects.exclude(id=self.obj.id)
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
 

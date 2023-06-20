@@ -20,6 +20,10 @@ class BlogFile(models.Model):
     file = models.FileField()
     blog = models.ForeignKey(Blog,on_delete=models.CASCADE)
 
+    def __str__(self):
+        return f'{self.file.name}'
+
+
 class Comment(models.Model):
     text = models.CharField(max_length=500)
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)

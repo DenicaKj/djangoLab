@@ -1,0 +1,32 @@
+{% extends "base_generic.html" %}
+{% block content %}
+
+    <h2 class="m-3">Blocked Users for {{user.username}}</h2>
+    <div>
+    <div class="card-group">
+	{% for block in blocked %}
+		<div class="card" style="width: 18rem;">
+  		<div class="card-body">
+    		<h5 class="card-title">{{block.username}}</h5>
+            <form method="post">
+                {% csrf_token %}
+            <input type="hidden" value="{{ block.id }}" name="userid">
+  		    <button type="submit" class="btn btn-danger" name="action" value="delete">Remove</button>
+            </form>
+        </div>
+		</div>
+	{% endfor %}
+    </div>
+    </div>
+    <h2 class="m-3">Add new blocked user</h2>
+    <form method="post">
+    {% csrf_token %}
+     <select name="userid" class="form-control">
+        <option value="%">---------</option>
+        {% for user in users %}
+        <option  value="{{ user.id }}">{{ user.username }}</option>
+        {% endfor %}
+    </select>
+    <button type="submit" name="action" class="btn btn-success m-3" value="add">Add</button>
+    </form>
+{% endblock %}
